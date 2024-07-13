@@ -14,7 +14,7 @@ const initializeDatabase = async (req, res) => {
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         `;
-       
+
         const createProjectTableQuery = `
             CREATE TABLE IF NOT EXISTS projects (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -85,17 +85,17 @@ const initializeDatabase = async (req, res) => {
             createTaskTableQuery,
             createCustomerTableQuery,
             createOrderTableQuery
-          ];
-        
-          queries.forEach((query, index) => {
+        ];
+
+        queries.forEach((query, index) => {
             database.query(query, (err, results, fields) => {
-              if (err) {
-                console.error(`Error creating table ${index + 1}:`, err);
-                return;
-              }
-              console.log(`Table ${index + 1} ready.`);
+                if (err) {
+                    console.error(`Error creating table ${index + 1}:`, err);
+                    return;
+                }
+                console.log(`Table ${index + 1} ready.`);
             });
-          });
+        });
 
 
         return res.status(200).json({
