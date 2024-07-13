@@ -5,6 +5,8 @@ const dotenv = require("dotenv");
 
 const database = require("./config/config");
 
+const initRouter = require("./routes/initRoutes");
+
 // Connecting to database
 database.connect();
 
@@ -22,6 +24,9 @@ app.use(
         credentials: true,
     })
 );
+
+// Use the user routes
+app.use('/api/init', initRouter);
 
 app.all("*", (req, res) => {
     return res.json({
