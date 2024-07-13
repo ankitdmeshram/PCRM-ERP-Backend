@@ -13,6 +13,7 @@ exports.signUp = async (req, res) => {
             return res.status(400).json({
                 success: false,
                 message: "All fields are required",
+                type: "error",
             });
         }
 
@@ -20,6 +21,7 @@ exports.signUp = async (req, res) => {
             return res.status(400).json({
                 success: false,
                 message: "Passwords do not match",
+                type: "error",
             });
         }
 
@@ -27,6 +29,7 @@ exports.signUp = async (req, res) => {
             return res.status(400).json({
                 success: false,
                 message: "Invalid email",
+                type: "error",
             });
         }
 
@@ -38,13 +41,25 @@ exports.signUp = async (req, res) => {
         database.query(addUserQuery, (err, results, fields) => {
             if (err) {
                 if (err.code === 'ER_DUP_ENTRY') {
-                    return res.status(400).json({ error: 'Email already exists' });
+                    return res.status(400).json({
+                        success: false,
+                        "message": 'Email already exists',
+                        type: "error",
+                    });
                 }
                 console.error('Error creating user:', err.message);
-                return res.status(500).json({ error: err.message });
+                return res.status(500).json({
+                    success: false,
+                    "message": err.message,
+                    type: "error",
+                });
             }
             sendMail(email, 'Signup Successfull', `Dear ${fname},\n\nYou have successfully created your account on our platform.\n\nBest regards,\nPCRM`);
-            res.status(200).json({ "message": "User Created Successfully!", "success": true });
+            res.status(200).json({
+                "message": "User Created Successfully!",
+                "success": true,
+                type: "success",
+            });
         });
 
     } catch (err) {
@@ -52,6 +67,7 @@ exports.signUp = async (req, res) => {
         res.status(500).json({
             success: false,
             message: "something went wrong",
+            type: "error",
         });
     }
 };
@@ -64,6 +80,7 @@ exports.signIn = async (req, res) => {
             return res.status(400).json({
                 success: false,
                 message: "All fields are required",
+                type: "error",
             });
         }
 
@@ -71,6 +88,7 @@ exports.signIn = async (req, res) => {
             return res.status(400).json({
                 success: false,
                 message: "Invalid email",
+                type: "error",
             });
         }
 
@@ -79,22 +97,38 @@ exports.signIn = async (req, res) => {
         database.query(getUserQuery, (err, results, fields) => {
             if (err) {
                 console.error('Error fetching user:', err.message);
-                return res.status(500).json({ error: err.message });
+                return res.status(500).json({
+                    success: false,
+                    "message": err.message,
+                    type: "error",
+                });
             }
 
             if (results.length === 0) {
-                return res.status(404).json({ error: 'User not found' });
+                return res.status(404).json({
+                    success: false,
+                    "message": 'User not found',
+                    type: "error",
+                });
             }
             console.log(results)
 
             const decryptedPassword = cryptr.decrypt(results[0].password);
 
             if (password !== decryptedPassword) {
-                return res.status(400).json({ error: 'Wrong password' });
+                return res.status(400).json({
+                    success: false,
+                    "message": 'Wrong password',
+                    type: "error",
+                });
             }
 
             sendMail(email, 'Signin Successfull', `Dear ${results[0].fname} ${results[0].lname},\n\nYou have successfully logged in to your account.\n\nBest regards,\nPCRM`);
-            res.status(200).json({ "message": "User Logged In Successfully!", "success": true });
+            res.status(200).json({
+                "message": "User Logged In Successfully!",
+                "success": true,
+                type: "success",
+            });
         });
 
     } catch (err) {
@@ -102,6 +136,7 @@ exports.signIn = async (req, res) => {
         res.status(500).json({
             success: false,
             message: "something went wrong",
+            type: "error",
         });
     }
 }
