@@ -7,6 +7,7 @@ const database = require("./config/config");
 
 const initRouter = require("./routes/initRoutes");
 const authRouter = require("./routes/authRoutes");
+const projectRouter = require("./routes/projectRoutes");
 
 // Connecting to database
 database.connect();
@@ -29,6 +30,7 @@ app.use(
 // Use the user routes
 app.use('/api/init', initRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/project', projectRouter);
 
 app.all("*", (req, res) => {
     return res.json({

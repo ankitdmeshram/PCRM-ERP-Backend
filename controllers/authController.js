@@ -1,5 +1,6 @@
 const Cryptr = require("cryptr");
 const cryptr = new Cryptr(process.env.SECRET_KEY);
+const jwt = require('jsonwebtoken');
 
 const { validateEmail } = require("../utils/common");
 const database = require("../config/config");
@@ -123,11 +124,17 @@ exports.signIn = async (req, res) => {
                 });
             }
 
-            sendMail(email, 'Signin Successfull', `Dear ${results[0].fname} ${results[0].lname},\n\nYou have successfully logged in to your account.\n\nBest regards,\nPCRM`);
-            res.status(200).json({
-                "message": "User Logged In Successfully!",
-                "success": true,
-                type: "success",
+            const payload = { user: { id: results[0].id, email: results[0].email } };
+
+            jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1d' }, (err, token) => {
+                if (err) throw err;
+                sendMail(email, 'Signin Successfull', `Dear ${results[0].fname} ${results[0].lname},\n\nYou have successfully logged in to your account.\n\nBest regards,\nPCRM`);
+                res.status(200).json({
+                    "message": "User Logged In Successfully!",
+                    "success": true,
+                    type: "success",
+                    token: token
+                });
             });
         });
 
